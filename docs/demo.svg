@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="430" viewBox="0 0 900 430" role="img" aria-label="PyGenKit terminal demo">
+  <title>PyGenKit terminal demo</title>
+  <style>
+    .terminal { fill: #0d1117; }
+    .titlebar { fill: #161b22; }
+    .dot-red { fill: #ff5f56; }
+    .dot-yellow { fill: #ffbd2e; }
+    .dot-green { fill: #27c93f; }
+    .text { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 20px; fill: #c9d1d9; }
+    .muted { fill: #8b949e; }
+    .green { fill: #3fb950; }
+    .blue { fill: #58a6ff; }
+    .yellow { fill: #d29922; }
+    .cursor { fill: #c9d1d9; animation: blink 1s step-end infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+    .line { opacity: 0; animation: appear 10s steps(1, end) infinite; }
+    .l1 { animation-delay: 0s; }
+    .l2 { animation-delay: 1s; }
+    .l3 { animation-delay: 2s; }
+    .l4 { animation-delay: 3s; }
+    .l5 { animation-delay: 4s; }
+    .l6 { animation-delay: 5s; }
+    .l7 { animation-delay: 6s; }
+    .l8 { animation-delay: 7s; }
+    .l9 { animation-delay: 8s; }
+    @keyframes appear { 0%, 100% { opacity: 1; } }
+  </style>
+  <rect class="terminal" x="0" y="0" width="900" height="430" rx="16" />
+  <rect class="titlebar" x="0" y="0" width="900" height="48" rx="16" />
+  <circle class="dot-red" cx="28" cy="24" r="7" />
+  <circle class="dot-yellow" cx="52" cy="24" r="7" />
+  <circle class="dot-green" cx="76" cy="24" r="7" />
+  <text class="text muted" x="360" y="31">pygenkit demo</text>
+
+  <text class="text line l1" x="36" y="86"><tspan class="green">$</tspan> uv tool install pygenkit</text>
+  <text class="text line l2" x="36" y="122"><tspan class="blue">✓</tspan> Installed pygenkit</text>
+  <text class="text line l3" x="36" y="168"><tspan class="green">$</tspan> pygenkit new my-app</text>
+  <text class="text line l4" x="36" y="204"><tspan class="blue">✓</tspan> Created project structure</text>
+  <text class="text line l5" x="36" y="240"><tspan class="blue">✓</tspan> Generated pyproject.toml, src/, tests/</text>
+  <text class="text line l6" x="36" y="286"><tspan class="green">$</tspan> pygenkit validate</text>
+  <text class="text line l7" x="36" y="322"><tspan class="blue">✓</tspan> Version consistency passed</text>
+  <text class="text line l8" x="36" y="358"><tspan class="blue">✓</tspan> CI/CD security checks passed</text>
+  <text class="text line l9" x="36" y="394"><tspan class="yellow">Status:</tspan> ready for release <tspan class="cursor">█</tspan></text>
+</svg>
