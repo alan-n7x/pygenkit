@@ -3,12 +3,12 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pygenesis"
+name = "pygenkit"
 version = "0.2.0"
 description = "Professional Python project generator — PyPI, APT, and Launchpad ready"
 readme = "README.md"
 requires-python = ">=3.12"
-license = "MIT"
+license = "GPL-3.0-only"
 authors = [
     { name = "Alan Santos", email = "alan.profissional.dev@gmail.com" },
 ]
@@ -27,12 +27,12 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/alan-n7x/pygenesis"
-Repository = "https://github.com/alan-n7x/pygenesis"
-Issues = "https://github.com/alan-n7x/pygenesis/issues"
+Homepage = "https://github.com/alan-n7x/pygenkit"
+Repository = "https://github.com/alan-n7x/pygenkit"
+Issues = "https://github.com/alan-n7x/pygenkit/issues"
 
 [project.scripts]
-pygenesis = "pygenesis.cli:cli"
+pygenkit = "pygenkit.cli:cli"
 
 [tool.setuptools]
 package-dir = { "" = "src" }
@@ -43,7 +43,7 @@ where = ["src"]
 exclude = ["tests*"]
 
 [tool.setuptools.package-data]
-pygenesis = ["templates/**/*", "templates/**"]
+pygenkit = ["templates/**/*", "templates/**"]
 
 [tool.ruff]
 target-version = "py312"

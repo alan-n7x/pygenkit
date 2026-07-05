@@ -17,7 +17,7 @@
 ## Checklist
 
 - [ ] `ruff check src/ tests/` passes
-- [ ] `mypy src/pygenesis/` passes
+- [ ] `mypy src/pygenkit/` passes
 - [ ] `pytest` passes
 - [ ] New tests added for the change
 - [ ] README updated if needed

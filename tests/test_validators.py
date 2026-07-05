@@ -6,10 +6,10 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from pygenesis.validators.api import has_errors, validate_project  # noqa: E402
-from pygenesis.validators.security import validate_security  # noqa: E402
-from pygenesis.validators.version import validate_version_consistency  # noqa: E402
-from pygenesis.validators.workflow import validate_workflows  # noqa: E402
+from pygenkit.validators.api import has_errors, validate_project  # noqa: E402
+from pygenkit.validators.security import validate_security  # noqa: E402
+from pygenkit.validators.version import validate_version_consistency  # noqa: E402
+from pygenkit.validators.workflow import validate_workflows  # noqa: E402
 
 
 def test_validate_version_consistent(tmp_path: Path) -> None:
@@ -46,7 +46,7 @@ def test_validate_workflow_with_file(tmp_path: Path) -> None:
     content = (
         "name: CI\non: [push]\njobs:\n"
         "  test:\n    runs-on: ubuntu-latest\n"
-        "    steps:\n      - uses: actions/checkout@v7\n"
+        "    steps:\n      - uses: actions/checkout@v6\n"
     )
     wf.write_text(content, encoding="utf-8")
     issues = validate_workflows(tmp_path)

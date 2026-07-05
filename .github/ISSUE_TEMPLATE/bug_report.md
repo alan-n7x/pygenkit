@@ -18,7 +18,7 @@ assignees: ""
 
 ## Environment
 
-- PyGenesis version:
+- PyGenKit version:
 - Python version:
 - OS:
 

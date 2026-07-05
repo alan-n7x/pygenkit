@@ -8,8 +8,8 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from pygenesis.health.api import calculate_health  # noqa: E402
-from pygenesis.health.checks import (  # noqa: E402
+from pygenkit.health.api import calculate_health  # noqa: E402
+from pygenkit.health.checks import (  # noqa: E402
     check_cicd,
     check_documentation,
     check_packaging,
@@ -18,7 +18,7 @@ from pygenesis.health.checks import (  # noqa: E402
     check_testing,
     check_versioning,
 )
-from pygenesis.models.health import CategoryScore  # noqa: E402
+from pygenkit.models.health import CategoryScore  # noqa: E402
 
 
 def _write_pyproject(path: Path, name: str = "test-app", version: str = "1.0.0") -> None:
@@ -84,7 +84,7 @@ def test_check_versioning(tmp_path: Path) -> None:
     _write_pyproject(tmp_path)
     _write_init(tmp_path, "test_app")
 
-    from pygenesis.inspector.pyproject import read_pyproject
+    from pygenkit.inspector.pyproject import read_pyproject
     data = read_pyproject(tmp_path)
     result = check_versioning(tmp_path, data)
     assert isinstance(result, CategoryScore)
@@ -141,7 +141,7 @@ def test_check_packaging(tmp_path: Path) -> None:
     assert result.score == 0.0
 
     _write_pyproject(tmp_path)
-    from pygenesis.inspector.pyproject import read_pyproject
+    from pygenkit.inspector.pyproject import read_pyproject
 
     data = read_pyproject(tmp_path)
     result = check_packaging(tmp_path, data)
@@ -160,7 +160,7 @@ def test_check_structure(tmp_path: Path) -> None:
 def test_health_cli() -> None:
     from typer.testing import CliRunner
 
-    from pygenesis.cli.app import cli
+    from pygenkit.cli.app import cli
 
     runner = CliRunner()
     result = runner.invoke(cli, ["health"])

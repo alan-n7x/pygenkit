@@ -9,9 +9,9 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from pygenesis.ai.prompts import SYSTEM_PROMPT, build_user_prompt  # noqa: E402
-from pygenesis.ai.provider import LLMProvider, OpenAIProvider, create_provider  # noqa: E402
-from pygenesis.ai.review import (  # noqa: E402
+from pygenkit.ai.prompts import SYSTEM_PROMPT, build_user_prompt  # noqa: E402
+from pygenkit.ai.provider import LLMProvider, OpenAIProvider, create_provider  # noqa: E402
+from pygenkit.ai.review import (  # noqa: E402
     ReviewResult,
     get_pr_diff_from_file,
     review_diff,

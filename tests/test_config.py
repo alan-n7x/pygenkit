@@ -6,7 +6,7 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from pygenesis.models.config import PyGenesisConfig  # noqa: E402
+from pygenkit.models.config import PyGenKitConfig  # noqa: E402
 
 SAMPLE_TOML = """[project]
 name = "hello-world"
@@ -39,10 +39,10 @@ revision = "1"
 
 
 def test_config_load_from_toml(tmp_path: Path) -> None:
-    config_path = tmp_path / "pygenesis.toml"
+    config_path = tmp_path / "pygenkit.toml"
     config_path.write_text(SAMPLE_TOML, encoding="utf-8")
 
-    cfg = PyGenesisConfig.load(config_path)
+    cfg = PyGenKitConfig.load(config_path)
     assert cfg.project.name == "hello-world"
     assert cfg.project.version == "0.2.0"
     assert cfg.ci.python_versions == ["3.12", "3.13"]
@@ -55,19 +55,19 @@ def test_config_load_from_toml(tmp_path: Path) -> None:
 
 
 def test_config_generate_default() -> None:
-    content = PyGenesisConfig.generate_default("my-app")
+    content = PyGenKitConfig.generate_default("my-app")
     assert 'name = "my-app"' in content
     assert 'version = "0.1.0"' in content
     assert "python_versions" in content
 
 
 def test_config_roundtrip(tmp_path: Path) -> None:
-    config_path = tmp_path / "pygenesis.toml"
+    config_path = tmp_path / "pygenkit.toml"
     config_path.write_text(SAMPLE_TOML, encoding="utf-8")
 
-    cfg1 = PyGenesisConfig.load(config_path)
+    cfg1 = PyGenKitConfig.load(config_path)
     cfg1.save(config_path)
-    cfg2 = PyGenesisConfig.load(config_path)
+    cfg2 = PyGenKitConfig.load(config_path)
 
     assert cfg2.project.name == cfg1.project.name
     assert cfg2.project.version == cfg1.project.version

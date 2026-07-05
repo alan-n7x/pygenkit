@@ -8,7 +8,7 @@ if str(SRC) not in sys.path:
 
 from typer.testing import CliRunner  # noqa: E402
 
-from pygenesis.cli.app import cli  # noqa: E402
+from pygenkit.cli.app import cli  # noqa: E402
 
 runner = CliRunner()
 
@@ -16,7 +16,7 @@ runner = CliRunner()
 def test_help_output() -> None:
     result = runner.invoke(cli, ["--help"])
     assert result.exit_code == 0
-    assert "pygenesis" in result.stdout
+    assert "pygenkit" in result.stdout
 
 
 def test_version_output() -> None:
@@ -28,13 +28,13 @@ def test_version_output() -> None:
 def test_doctor_runs() -> None:
     result = runner.invoke(cli, ["doctor"])
     assert result.exit_code in (0, 1)
-    assert "PyGenesis" in result.stdout
+    assert "PyGenKit" in result.stdout
 
 
 def test_init_creates_config() -> None:
     result = runner.invoke(cli, ["init", "my-app"], standalone_mode=False)
     assert result.exit_code == 0
-    config = Path("pygenesis.toml")
+    config = Path("pygenkit.toml")
     assert config.exists()
     config.unlink()
 

@@ -1,0 +1,37 @@
+name: Publish to Launchpad
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  launchpad:
+    runs-on: {{ ci.runner }}
+    environment: launchpad
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "{{ ci.python_versions[0] }}"
+      - name: Install build deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y devscripts debhelper dput
+      - name: Import GPG signing key
+        env:
+          GPG_PRIVATE_KEY: {% raw %}${{ secrets.GPG_PRIVATE_KEY }}{% endraw %}
+          GPG_PASSPHRASE: {% raw %}${{ secrets.GPG_PASSPHRASE }}{% endraw %}
+          GPG_KEY_ID: {% raw %}${{ secrets.GPG_KEY_ID }}{% endraw %}
+        run: |
+          printf '%s' "$GPG_PRIVATE_KEY" | gpg --batch --import
+          printf '%s' "$GPG_PASSPHRASE" | gpg \
+            --batch --yes --pinentry-mode loopback --passphrase-fd 0 \
+            --local-user "$GPG_KEY_ID" --sign /dev/null
+      - name: Build source package
+        env:
+          GPG_KEY_ID: {% raw %}${{ secrets.GPG_KEY_ID }}{% endraw %}
+        run: |
+          debuild -S -sa -d -k"$GPG_KEY_ID"
+      - name: Upload to Launchpad
+        run: |
+          dput ppa:{{ debian.owner }}/{{ debian.ppa }} ../*.changes

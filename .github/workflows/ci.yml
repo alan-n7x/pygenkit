@@ -24,7 +24,7 @@ jobs:
       - name: Lint
         run: uv run ruff check src/ tests/
       - name: Type check
-        run: uv run mypy src/pygenesis/
+        run: uv run mypy src/pygenkit/
       - name: Test
         run: uv run pytest
       - name: Build

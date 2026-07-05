@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-about: Suggest an idea for PyGenesis
+about: Suggest an idea for PyGenKit
 title: ""
 labels: enhancement
 assignees: ""

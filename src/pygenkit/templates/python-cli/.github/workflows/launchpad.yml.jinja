@@ -1,0 +1,50 @@
+name: Launchpad PPA
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  launchpad:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y devscripts debhelper dh-python debmake
+
+      - name: Import GPG key
+        env:
+          GPG_PRIVATE_KEY: ${{ "{{" }} secrets.GPG_PRIVATE_KEY {{ "}}" }}
+          GPG_PASSPHRASE: ${{ "{{" }} secrets.GPG_PASSPHRASE {{ "}}" }}
+          GPG_KEY_ID: ${{ "{{" }} secrets.GPG_KEY_ID {{ "}}" }}
+        run: |
+          printf '%s' "$GPG_PRIVATE_KEY" | gpg --batch --import
+          printf '%s' "$GPG_PASSPHRASE" | gpg \
+            --batch --yes --pinentry-mode loopback --passphrase-fd 0 \
+            --local-user "$GPG_KEY_ID" --sign /dev/null
+
+      - name: Build source package
+        run: |
+          VERSION="${{ "{{" }} github.ref_name {{ "}}" }}"
+          VERSION="${VERSION#v}"
+          PACKAGE="{{ debian_package }}"
+          TARBALL="../${PACKAGE}_${VERSION}.orig.tar.xz"
+          git archive --format=tar.xz --output="${TARBALL}" --prefix="${PACKAGE}-${VERSION}/" HEAD
+          mkdir -p /tmp/build
+          cd /tmp/build
+          tar xf "${TARBALL}"
+          cd "${PACKAGE}-${VERSION}"
+          debuild -S -sa
+
+      - name: Upload to Launchpad
+        env:
+          DEB_SIGN_KEYID: ${{ "{{" }} secrets.GPG_KEY_ID {{ "}}" }}
+        run: |
+          cd /tmp/build
+          dput ppa:{{ github.owner }}/{{ debian.ppa }} *_source.changes

@@ -8,18 +8,18 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from pygenesis.generators.deploy import DeployGenerator  # noqa: E402
-from pygenesis.generators.docker import DockerGenerator  # noqa: E402
-from pygenesis.generators.github_actions import GitHubActionsGenerator  # noqa: E402
-from pygenesis.generators.orchestrator import generate_all  # noqa: E402
-from pygenesis.models.config import (  # noqa: E402
+from pygenkit.generators.deploy import DeployGenerator  # noqa: E402
+from pygenkit.generators.docker import DockerGenerator  # noqa: E402
+from pygenkit.generators.github_actions import GitHubActionsGenerator  # noqa: E402
+from pygenkit.generators.orchestrator import generate_all  # noqa: E402
+from pygenkit.models.config import (  # noqa: E402
     CIConfig,
     DebianConfig,
     DeployConfig,
     DockerConfig,
     GitHubConfig,
     ProjectConfig,
-    PyGenesisConfig,
+    PyGenKitConfig,
     PyPIConfig,
     ReleaseConfig,
 )
@@ -29,8 +29,8 @@ def _make_config(
     project_name: str = "test-app",
     docker_enabled: bool = False,
     deploy_enabled: bool = False,
-) -> PyGenesisConfig:
-    return PyGenesisConfig(
+) -> PyGenKitConfig:
+    return PyGenKitConfig(
         project=ProjectConfig(name=project_name, version="1.0.0"),
         ci=CIConfig(python_versions=["3.12", "3.13"]),
         release=ReleaseConfig(),
@@ -91,6 +91,9 @@ def test_github_actions_launchpad(tmp_path: Path) -> None:
     content = (wf_dir / "publish-launchpad.yml").read_text()
     assert "testuser" in content
     assert "dput" in content
+    assert "secrets.GPG_PRIVATE_KEY" in content
+    assert "secrets.GPG_PASSPHRASE" in content
+    assert "secrets.GPG_KEY_ID" in content
 
 
 def test_github_actions_skip_disabled(tmp_path: Path) -> None:
@@ -171,7 +174,7 @@ def test_generate_all_disabled(tmp_path: Path) -> None:
 
 
 def test_project_generator_basic(tmp_path: Path) -> None:
-    from pygenesis.generators.project import ProjectGenerator
+    from pygenkit.generators.project import ProjectGenerator
 
     gen = ProjectGenerator()
     root = gen.generate(name="hello-world", output_dir=tmp_path, force=True)
@@ -185,7 +188,7 @@ def test_project_generator_basic(tmp_path: Path) -> None:
     assert (root / ".gitignore").exists()
     assert (root / ".editorconfig").exists()
     assert (root / ".pre-commit-config.yaml").exists()
-    assert (root / "pygenesis.toml").exists()
+    assert (root / "pygenkit.toml").exists()
 
     init_content = (root / "src" / "hello_world" / "__init__.py").read_text()
     assert "0.1.0" in init_content
@@ -198,7 +201,7 @@ def test_project_generator_basic(tmp_path: Path) -> None:
 
 
 def test_project_generator_custom_author(tmp_path: Path) -> None:
-    from pygenesis.generators.project import ProjectGenerator
+    from pygenkit.generators.project import ProjectGenerator
 
     gen = ProjectGenerator()
     root = gen.generate(
@@ -213,12 +216,12 @@ def test_project_generator_custom_author(tmp_path: Path) -> None:
     assert "Test User" in pyproject
     assert "test@example.com" in pyproject
 
-    toml = (root / "pygenesis.toml").read_text()
+    toml = (root / "pygenkit.toml").read_text()
     assert "testuser" in toml
 
 
 def test_project_generator_existing_fails(tmp_path: Path) -> None:
-    from pygenesis.generators.project import ProjectGenerator
+    from pygenkit.generators.project import ProjectGenerator
 
     gen = ProjectGenerator()
     gen.generate(name="exists", output_dir=tmp_path, force=True)
@@ -228,7 +231,7 @@ def test_project_generator_existing_fails(tmp_path: Path) -> None:
 
 
 def test_project_generator_overwrites_with_force(tmp_path: Path) -> None:
-    from pygenesis.generators.project import ProjectGenerator
+    from pygenkit.generators.project import ProjectGenerator
 
     gen = ProjectGenerator()
     root = gen.generate(name="dup", output_dir=tmp_path, force=True)
@@ -240,7 +243,7 @@ def test_project_generator_overwrites_with_force(tmp_path: Path) -> None:
 def test_new_cli(tmp_path: Path) -> None:
     from typer.testing import CliRunner
 
-    from pygenesis.cli.app import cli
+    from pygenkit.cli.app import cli
 
     runner = CliRunner()
     result = runner.invoke(cli, ["new", "cli-test", "--output", str(tmp_path)])
@@ -254,7 +257,7 @@ def test_new_cli(tmp_path: Path) -> None:
 def test_new_cli_existing_fails(tmp_path: Path) -> None:
     from typer.testing import CliRunner
 
-    from pygenesis.cli.app import cli
+    from pygenkit.cli.app import cli
 
     (tmp_path / "dup").mkdir()
     r2 = CliRunner()

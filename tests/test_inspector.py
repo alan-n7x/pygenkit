@@ -6,10 +6,10 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from pygenesis.inspector import debian as debian_inspector  # noqa: E402
-from pygenesis.inspector import detect as detect_inspector  # noqa: E402
-from pygenesis.inspector import pyproject as pyproject_inspector  # noqa: E402
-from pygenesis.inspector.api import inspect_project  # noqa: E402
+from pygenkit.inspector import debian as debian_inspector  # noqa: E402
+from pygenkit.inspector import detect as detect_inspector  # noqa: E402
+from pygenkit.inspector import pyproject as pyproject_inspector  # noqa: E402
+from pygenkit.inspector.api import inspect_project  # noqa: E402
 
 FIXTURES = ROOT / "tests" / "fixtures"
 

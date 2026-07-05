@@ -1,4 +1,4 @@
-# PyGenesis
+# PyGenKit
 
 Professional Python project generator -- **PyPI**, **APT**, and **Launchpad** ready.
 
@@ -8,33 +8,33 @@ generate GitHub Actions pipelines, Dockerfiles, and deploy configs.
 ## Installation
 
 ```bash
-pip install pygenesis
+pip install pygenkit
 ```
 
 Or via `uv`:
 
 ```bash
-uv tool install pygenesis
+uv tool install pygenkit
 ```
 
 ## Quick Start
 
 ```bash
 # Scaffold a complete project with CI/CD
-pygenesis new my-app
+pygenkit new my-app
 cd my-app
 
 # Inspect project structure
-pygenesis inspect
+pygenkit inspect
 
 # Validate versions, workflows, security
-pygenesis validate
+pygenkit validate
 
 # Generate CI/CD pipelines, Docker, deploy configs
-pygenesis generate
+pygenkit generate
 
 # Check system requirements
-pygenesis doctor
+pygenkit doctor
 ```
 
 ## Commands
@@ -42,7 +42,7 @@ pygenesis doctor
 | Command         | Description                                    |
 |-----------------|------------------------------------------------|
 | `new`           | Scaffold a complete Python project with CI/CD  |
-| `init`          | Create `pygenesis.toml` in an existing project |
+| `init`          | Create `pygenkit.toml` in an existing project |
 | `inspect`       | Analyze project structure, versions, metadata  |
 | `validate`      | Check version consistency, workflows, security |
 | `generate`      | Generate CI/CD, Docker, and deploy files       |
@@ -55,22 +55,22 @@ pygenesis doctor
 
 ```bash
 # Create config
-pygenesis init my-project
+pygenkit init my-project
 
 # Inspect project
-pygenesis inspect
+pygenkit inspect
 
 # Validate
-pygenesis validate
+pygenkit validate
 
 # Generate GitHub Actions CI/CD pipelines
-pygenesis generate
+pygenkit generate
 
 # Dry-run to preview without writing
-pygenesis generate --dry-run
+pygenkit generate --dry-run
 
 # Overwrite existing files
-pygenesis generate --force
+pygenkit generate --force
 
 # Enable Docker + deploy in config, then generate:
 #   [docker]
@@ -107,7 +107,7 @@ Runs three categories of checks:
 
 ## Generate
 
-Generates files from Jinja2 templates based on `pygenesis.toml`:
+Generates files from Jinja2 templates based on `pygenkit.toml`:
 
 ### GitHub Actions
 
@@ -133,7 +133,7 @@ Generates files from Jinja2 templates based on `pygenesis.toml`:
 | `Procfile`      | Heroku   |
 | `railway.json`  | Railway  |
 
-## Configuration (`pygenesis.toml`)
+## Configuration (`pygenkit.toml`)
 
 ```toml
 [project]
@@ -193,7 +193,7 @@ cpus = 1
 ## Doctor
 
 ```bash
-pygenesis doctor
+pygenkit doctor
 ```
 
 Checks for:
@@ -206,10 +206,24 @@ Checks for:
 - twine
 - build
 
+## Publishing setup
+
+PyPI publishing uses Trusted Publishing (OIDC), so it does not require a long-lived API
+token. Configure the `pypi` environment on GitHub and authorize `release.yml` as a
+Trusted Publisher for the `pygenkit` project on PyPI. Set the repository variable
+`PYPI_ENABLED=true` to enable the publish step.
+
+Launchpad publishing requires a PPA and an OpenPGP key registered with the Launchpad
+account. Add these secrets to the `launchpad` GitHub environment:
+
+- `GPG_PRIVATE_KEY`
+- `GPG_PASSPHRASE`
+- `GPG_KEY_ID`
+
 ## Architecture
 
 ```
-src/pygenesis/
+src/pygenkit/
 ├── cli/              # CLI commands (Typer)
 │   └── commands/     # init, inspect, validate, generate, release-check, doctor
 ├── generators/       # GitHub Actions, Docker, Deploy generators
@@ -225,7 +239,7 @@ src/pygenesis/
 │   ├── git.py        # Git remote, tags
 │   └── pyproject.py  # pyproject.toml parsing
 ├── models/           # Data models (dataclasses)
-│   ├── config.py     # PyGenesisConfig and sub-configs
+│   ├── config.py     # PyGenKitConfig and sub-configs
 │   └── inspection.py # ProjectInspection and sub-inspections
 ├── render/           # Jinja2 rendering engine
 ├── templates/        # Jinja2 templates for generation
@@ -242,7 +256,7 @@ src/pygenesis/
 
 ## Development Workflow
 
-PyGenesis itself follows the professional workflow it generates for other projects.
+PyGenKit itself follows the professional workflow it generates for other projects.
 
 ```
 feature branch → Pull Request → CI checks → merge to main → tag → release
@@ -256,7 +270,7 @@ git checkout -b feat/my-feature
 
 # 2. Code, commit, push
 ruff check src/ tests/
-mypy src/pygenesis/
+mypy src/pygenkit/
 pytest
 git add . && git commit -m "feat: description"
 git push -u origin feat/my-feature
@@ -267,7 +281,7 @@ git push -u origin feat/my-feature
 # 4. After merge, tag a release
 git checkout main
 git pull
-pygenesis release-check    # verify readiness
+pygenkit release-check    # verify readiness
 git tag v0.x.x
 git push origin v0.x.x     # triggers Release workflow
 ```
@@ -316,4 +330,4 @@ GitHub repo → Settings → Branches → Add branch protection rule
 
 ## License
 
-MIT
+GNU General Public License v3.0 only (`GPL-3.0-only`). See [LICENSE](LICENSE).
