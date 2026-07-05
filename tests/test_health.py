@@ -131,6 +131,40 @@ def test_check_cicd(tmp_path: Path) -> None:
     assert result.score > 0
 
 
+def test_check_cicd_detects_pypi_action_in_release_workflow(tmp_path: Path) -> None:
+    wf_dir = tmp_path / ".github" / "workflows"
+    wf_dir.mkdir(parents=True)
+    (wf_dir / "release.yml").write_text(
+        "name: Release\nsteps:\n  - uses: pypa/gh-action-pypi-publish@release/v1\n",
+        encoding="utf-8",
+    )
+
+    result = check_cicd(tmp_path)
+
+    assert "PyPI publish workflow present" in result.details
+    assert "No PyPI publish workflow" not in result.issues
+
+
+def test_health_has_no_module_or_pypi_false_positives(tmp_path: Path) -> None:
+    _write_pyproject(tmp_path, name="pygenkit", version="0.2.3")
+    _write_init(tmp_path, "pygenkit", version="0.2.3")
+    (tmp_path / "src" / "pygenesis.egg-info").mkdir()
+    wf_dir = tmp_path / ".github" / "workflows"
+    wf_dir.mkdir(parents=True)
+    (wf_dir / "release.yml").write_text(
+        "steps:\n  - uses: pypa/gh-action-pypi-publish@release/v1\n",
+        encoding="utf-8",
+    )
+
+    report = calculate_health(tmp_path)
+    issues = {
+        issue for category in report.categories.values() for issue in category.issues
+    }
+
+    assert "No __version__ in module __init__.py" not in issues
+    assert "No PyPI publish workflow" not in issues
+
+
 def test_check_security(tmp_path: Path) -> None:
     result = check_security(tmp_path)
     assert isinstance(result, CategoryScore)

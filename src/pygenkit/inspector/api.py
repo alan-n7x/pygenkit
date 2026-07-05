@@ -83,15 +83,15 @@ def _inspect_workflows(root: Path) -> WorkflowInspection:
     if not wf_dir.is_dir():
         return wf
 
-    for f in wf_dir.glob("*.yml"):
+    for f in detect_inspector.workflow_files(root):
         wf.files.append(f.name)
         content = f.read_text(encoding="utf-8", errors="replace")
-        if "pypi" in content.lower() or "publish" in content.lower():
-            wf.has_pypi_publish = True
         if "launchpad" in content.lower() or "ppa" in content.lower():
             wf.has_launchpad = True
         if "test" in content.lower() or "lint" in content.lower():
             wf.has_ci = True
+
+    wf.has_pypi_publish = detect_inspector.has_pypi_publish_workflow(root)
 
     return wf
 

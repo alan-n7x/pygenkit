@@ -71,6 +71,52 @@ def test_detect_module(tmp_path: Path) -> None:
     assert detect_inspector.detect_module(tmp_path) == "mypkg"
 
 
+def test_detect_module_prioritizes_project_name_and_ignores_egg_info(
+    tmp_path: Path,
+) -> None:
+    src = tmp_path / "src"
+    package = src / "my_project"
+    package.mkdir(parents=True)
+    (package / "__init__.py").write_text("", encoding="utf-8")
+    (src / "another_package").mkdir()
+    (src / "another_package" / "__init__.py").write_text("", encoding="utf-8")
+    (src / "pygenesis.egg-info").mkdir()
+
+    assert detect_inspector.detect_module(tmp_path, "my-project") == "my_project"
+
+
+def test_detect_module_fallback_ignores_non_packages(tmp_path: Path) -> None:
+    src = tmp_path / "src"
+    (src / "build").mkdir(parents=True)
+    (src / "legacy.egg-info").mkdir()
+    package = src / "actual_package"
+    package.mkdir()
+    (package / "__init__.py").write_text("", encoding="utf-8")
+
+    assert detect_inspector.detect_module(tmp_path) == "actual_package"
+
+
+def test_inspect_detects_pypi_publish_in_release_yaml(tmp_path: Path) -> None:
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\nname = "sample-app"\nversion = "1.0.0"\n', encoding="utf-8"
+    )
+    package = tmp_path / "src" / "sample_app"
+    package.mkdir(parents=True)
+    (package / "__init__.py").write_text('__version__ = "1.0.0"\n', encoding="utf-8")
+    workflows = tmp_path / ".github" / "workflows"
+    workflows.mkdir(parents=True)
+    (workflows / "release.yaml").write_text(
+        "steps:\n  - uses: pypa/gh-action-pypi-publish@release/v1\n",
+        encoding="utf-8",
+    )
+
+    result = inspect_project(tmp_path)
+
+    assert result.module == "sample_app"
+    assert result.versions.init_version == "1.0.0"
+    assert result.has_workflows.has_pypi_publish is True
+
+
 def test_detect_tests(tmp_path: Path) -> None:
     (tmp_path / "test_foo.py").write_text("", encoding="utf-8")
     assert detect_inspector.detect_tests(tmp_path) is True

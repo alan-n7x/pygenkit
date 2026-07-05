@@ -3,29 +3,81 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+_IGNORED_MODULE_DIRS = {
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+    "env",
+    "venv",
+}
+
+
+def _module_name(project_name: str) -> str:
+    return project_name.replace("-", "_")
+
+
+def _is_module_dir(path: Path) -> bool:
+    return (
+        path.is_dir()
+        and path.name not in _IGNORED_MODULE_DIRS
+        and not path.name.endswith(".egg-info")
+        and not path.name.startswith("_")
+        and (path / "__init__.py").is_file()
+    )
+
 
 def detect_module(root: str | Path, project_name: str | None = None) -> str | None:
     root = Path(root)
     src_dir = root / "src"
+
+    # The declared distribution name is the strongest signal. Python package
+    # names use underscores where distribution names commonly use hyphens.
+    if project_name:
+        candidate = _module_name(project_name)
+        for base in (src_dir, root):
+            module_dir = base / candidate
+            if _is_module_dir(module_dir):
+                return candidate
+
+    # Fall back to scanning only importable package directories.
     if src_dir.is_dir():
-        candidates = sorted(
-            d for d in src_dir.iterdir()
-            if d.is_dir() and not d.name.startswith("_")
-        )
+        candidates = sorted(d for d in src_dir.iterdir() if _is_module_dir(d))
         if candidates:
             return candidates[0].name
 
-    top_dirs = sorted(d for d in root.iterdir() if d.is_dir() and not d.name.startswith("_"))
-    python_dirs = [d for d in top_dirs if (d / "__init__.py").exists()]
+    python_dirs = sorted(d for d in root.iterdir() if _is_module_dir(d))
     if python_dirs:
         return python_dirs[0].name
 
-    if project_name:
-        candidate = project_name.replace("-", "_")
-        if (src_dir / candidate).is_dir():
-            return candidate
-
     return None
+
+
+def workflow_files(root: str | Path) -> list[Path]:
+    workflow_dir = Path(root) / ".github" / "workflows"
+    if not workflow_dir.is_dir():
+        return []
+    return sorted((*workflow_dir.glob("*.yml"), *workflow_dir.glob("*.yaml")))
+
+
+def has_pypi_publish_workflow(root: str | Path) -> bool:
+    markers = (
+        "pypa/gh-action-pypi-publish",
+        "twine upload",
+        "trusted publishing",
+        "publish to pypi",
+        "pypi publish",
+    )
+    for path in workflow_files(root):
+        if "pypi" in path.stem.lower():
+            return True
+        content = path.read_text(encoding="utf-8", errors="replace").lower()
+        if any(marker in content for marker in markers):
+            return True
+    return False
 
 
 def detect_tests(root: str | Path) -> bool:

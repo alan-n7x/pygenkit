@@ -131,7 +131,7 @@ def check_cicd(root: Path) -> CategoryScore:
 
     wf_dir = root / ".github" / "workflows"
     if wf_dir.is_dir():
-        wf_files = list(wf_dir.glob("*.yml"))
+        wf_files = detect_inspector.workflow_files(root)
         score.details.append(f"{len(wf_files)} workflow file(s)")
         if wf_files:
             score.passed += 1
@@ -139,7 +139,7 @@ def check_cicd(root: Path) -> CategoryScore:
 
         has_ci = any("ci" in f.name.lower() for f in wf_files)
         has_release = any("release" in f.name.lower() for f in wf_files)
-        has_pypi = any("pypi" in f.name.lower() for f in wf_files)
+        has_pypi = detect_inspector.has_pypi_publish_workflow(root)
 
         if has_ci:
             score.passed += 1
@@ -210,7 +210,7 @@ def check_security(root: Path) -> CategoryScore:
     wf_dir = root / ".github" / "workflows"
     has_permissions = False
     if wf_dir.is_dir():
-        for f in wf_dir.glob("*.yml"):
+        for f in detect_inspector.workflow_files(root):
             content = f.read_text(encoding="utf-8", errors="replace")
             if "permissions:" in content:
                 has_permissions = True
