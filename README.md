@@ -44,6 +44,8 @@ pygenesis doctor
 | `inspect`       | Analyze project structure, versions, metadata  |
 | `validate`      | Check version consistency, workflows, security |
 | `generate`      | Generate CI/CD, Docker, and deploy files       |
+| `health`        | Assess project health across 7 categories      |
+| `review`        | Review a GitHub PR diff using AI               |
 | `release-check` | Verify release readiness (coming soon)         |
 | `doctor`        | Check system for required tools                |
 
@@ -234,6 +236,76 @@ src/pygenesis/
     ├── version.py
     ├── workflow.py
     └── security.py
+```
+
+## Development Workflow
+
+PyGenesis itself follows the professional workflow it generates for other projects.
+
+```
+feature branch → Pull Request → CI checks → merge to main → tag → release
+```
+
+### Step by step
+
+```bash
+# 1. Create a feature branch
+git checkout -b feat/my-feature
+
+# 2. Code, commit, push
+ruff check src/ tests/
+mypy src/pygenesis/
+pytest
+git add . && git commit -m "feat: description"
+git push -u origin feat/my-feature
+
+# 3. Open a Pull Request on GitHub
+#    CI runs automatically on PR
+
+# 4. After merge, tag a release
+git checkout main
+git pull
+pygenesis release-check    # verify readiness
+git tag v0.x.x
+git push origin v0.x.x     # triggers Release workflow
+```
+
+### Branch naming
+
+| Prefix     | Purpose                |
+|------------|------------------------|
+| `feat/*`   | New features           |
+| `fix/*`    | Bug fixes              |
+| `refactor/*` | Code improvements    |
+| `docs/*`   | Documentation          |
+| `ci/*`     | CI/CD changes          |
+
+## Branch Protection
+
+The `main` branch **must be protected** in the GitHub repository settings:
+
+### Required settings
+
+| Setting                          | Solo | Team |
+|----------------------------------|------|------|
+| Require pull request before merging | Yes | Yes |
+| Require status checks to pass (CI)  | Yes | Yes |
+| Block force pushes                   | Yes | Yes |
+| Restrict deletions                   | Yes | Yes |
+| Required approvals                  | 0    | 1    |
+
+When working alone, skip approval requirements. When adding maintainers, set **Required approvals: 1**.
+
+### How to configure
+
+```
+GitHub repo → Settings → Branches → Add branch protection rule
+  Branch name pattern: main
+  ☑ Require a pull request before merging
+  ☑ Require status checks to pass
+  ☑ Require CI
+  ☑ Block force pushes
+  ☑ Restrict deletions
 ```
 
 ## Requirements
