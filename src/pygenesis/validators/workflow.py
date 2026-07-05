@@ -100,10 +100,12 @@ def _check_action_version(prefix: str, step_idx: int, uses: str) -> list[str]:
 
     action, version = uses.rsplit("@", 1)
     known_outdated = {
-        "actions/checkout@v3": "use actions/checkout@v4 or newer",
-        "actions/checkout@v2": "use actions/checkout@v4 or newer",
-        "actions/setup-python@v4": "use actions/setup-python@v5 or newer",
-        "actions/setup-python@v3": "use actions/setup-python@v5 or newer",
+        "actions/checkout@v4": "use actions/checkout@v6 or newer",
+        "actions/checkout@v3": "use actions/checkout@v6 or newer",
+        "actions/checkout@v2": "use actions/checkout@v6 or newer",
+        "actions/setup-python@v5": "use actions/setup-python@v6 or newer",
+        "actions/setup-python@v4": "use actions/setup-python@v6 or newer",
+        "actions/setup-python@v3": "use actions/setup-python@v6 or newer",
         "actions/upload-artifact@v3": "use actions/upload-artifact@v4 or newer",
         "actions/download-artifact@v3": "use actions/download-artifact@v4 or newer",
     }

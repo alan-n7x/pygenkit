@@ -13,8 +13,8 @@ jobs:
       matrix:
         python-version: {{ ci.python_versions }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: {% raw %}${{ matrix.python-version }}{% endraw %}
       - name: Install dependencies

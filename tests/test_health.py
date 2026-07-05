@@ -52,18 +52,18 @@ def test_health_score_perfect(tmp_path: Path) -> None:
     wf_dir.mkdir(parents=True, exist_ok=True)
     (wf_dir / "ci.yml").write_text(
         "name: CI\non: [push]\npermissions: read-all\njobs:\n  test:\n    runs-on: ubuntu-latest\n"
-        "    steps:\n      - uses: actions/checkout@v4\n",
+        "    steps:\n      - uses: actions/checkout@v6\n",
         encoding="utf-8",
     )
     (wf_dir / "release.yml").write_text(
         "name: Release\non: [push]\npermissions: write-all\n"
         "jobs:\n  rel:\n    runs-on: ubuntu-latest\n"
-        "    steps:\n      - uses: actions/checkout@v4\n",
+        "    steps:\n      - uses: actions/checkout@v6\n",
         encoding="utf-8",
     )
     (wf_dir / "publish-pypi.yml").write_text(
         "name: PyPI\non: [push]\npermissions: id-token\njobs:\n  pub:\n    runs-on: ubuntu-latest\n"
-        "    steps:\n      - uses: actions/checkout@v4\n",
+        "    steps:\n      - uses: actions/checkout@v6\n",
         encoding="utf-8",
     )
 

@@ -55,6 +55,8 @@ def test_github_actions_ci(tmp_path: Path) -> None:
     assert "3.13" in content
     assert "ruff check" in content
     assert "mypy" in content
+    assert "actions/checkout@v6" in content
+    assert "actions/setup-python@v6" in content
 
 
 def test_github_actions_release(tmp_path: Path) -> None:
