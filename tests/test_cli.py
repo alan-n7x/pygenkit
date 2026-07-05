@@ -22,7 +22,7 @@ def test_help_output() -> None:
 def test_version_output() -> None:
     result = runner.invoke(cli, ["--version"])
     assert result.exit_code == 0
-    assert "0.2.3" in result.stdout
+    assert "0.2.4" in result.stdout
 
 
 def test_doctor_runs() -> None:
