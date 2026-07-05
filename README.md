@@ -20,8 +20,9 @@ uv tool install pygenesis
 ## Quick Start
 
 ```bash
-# Initialize config in your project
-pygenesis init my-app
+# Scaffold a complete project with CI/CD
+pygenesis new my-app
+cd my-app
 
 # Inspect project structure
 pygenesis inspect
@@ -40,6 +41,7 @@ pygenesis doctor
 
 | Command         | Description                                    |
 |-----------------|------------------------------------------------|
+| `new`           | Scaffold a complete Python project with CI/CD  |
 | `init`          | Create `pygenesis.toml` in an existing project |
 | `inspect`       | Analyze project structure, versions, metadata  |
 | `validate`      | Check version consistency, workflows, security |

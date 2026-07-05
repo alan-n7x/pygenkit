@@ -168,6 +168,98 @@ def test_generate_all_disabled(tmp_path: Path) -> None:
     assert results["deploy"] == []
 
 
+def test_project_generator_basic(tmp_path: Path) -> None:
+    from pygenesis.generators.project import ProjectGenerator
+
+    gen = ProjectGenerator()
+    root = gen.generate(name="hello-world", output_dir=tmp_path, force=True)
+    assert root.exists()
+    assert (root / "src" / "hello_world" / "__init__.py").exists()
+    assert (root / "src" / "hello_world" / "cli.py").exists()
+    assert (root / "tests" / "test_cli.py").exists()
+    assert (root / "pyproject.toml").exists()
+    assert (root / "README.md").exists()
+    assert (root / "LICENSE").exists()
+    assert (root / ".gitignore").exists()
+    assert (root / ".editorconfig").exists()
+    assert (root / ".pre-commit-config.yaml").exists()
+    assert (root / "pygenesis.toml").exists()
+
+    init_content = (root / "src" / "hello_world" / "__init__.py").read_text()
+    assert "0.1.0" in init_content
+
+    readme = (root / "README.md").read_text()
+    assert "hello-world" in readme
+
+    cli = (root / "src" / "hello_world" / "cli.py").read_text()
+    assert "Hello from hello-world!" in cli
+
+
+def test_project_generator_custom_author(tmp_path: Path) -> None:
+    from pygenesis.generators.project import ProjectGenerator
+
+    gen = ProjectGenerator()
+    root = gen.generate(
+        name="my-app",
+        output_dir=tmp_path,
+        force=True,
+        author_name="Test User",
+        author_email="test@example.com",
+        github_owner="testuser",
+    )
+    pyproject = (root / "pyproject.toml").read_text()
+    assert "Test User" in pyproject
+    assert "test@example.com" in pyproject
+
+    toml = (root / "pygenesis.toml").read_text()
+    assert "testuser" in toml
+
+
+def test_project_generator_existing_fails(tmp_path: Path) -> None:
+    from pygenesis.generators.project import ProjectGenerator
+
+    gen = ProjectGenerator()
+    gen.generate(name="exists", output_dir=tmp_path, force=True)
+    import pytest
+    with pytest.raises(FileExistsError):
+        gen.generate(name="exists", output_dir=tmp_path, force=False)
+
+
+def test_project_generator_overwrites_with_force(tmp_path: Path) -> None:
+    from pygenesis.generators.project import ProjectGenerator
+
+    gen = ProjectGenerator()
+    root = gen.generate(name="dup", output_dir=tmp_path, force=True)
+    root2 = gen.generate(name="dup", output_dir=tmp_path, force=True)
+    assert root == root2
+    assert root.exists()
+
+
+def test_new_cli(tmp_path: Path) -> None:
+    from typer.testing import CliRunner
+
+    from pygenesis.cli.app import cli
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ["new", "cli-test", "--output", str(tmp_path)])
+    assert result.exit_code == 0
+    assert "Created" in result.stdout
+
+    project_dir = tmp_path / "cli-test"
+    assert project_dir.exists()
+
+
+def test_new_cli_existing_fails(tmp_path: Path) -> None:
+    from typer.testing import CliRunner
+
+    from pygenesis.cli.app import cli
+
+    (tmp_path / "dup").mkdir()
+    r2 = CliRunner()
+    result = r2.invoke(cli, ["new", "dup", "--output", str(tmp_path)])
+    assert result.exit_code == 1
+
+
 def test_generate_no_force_skips_existing(tmp_path: Path) -> None:
     config = _make_config(docker_enabled=True)
     (tmp_path / "Dockerfile").write_text("existing", encoding="utf-8")

@@ -4,49 +4,34 @@ from pathlib import Path
 
 import typer
 
-from pygenesis.config.loader import ConfigLoader
-from pygenesis.config.validator import ConfigValidator
 from pygenesis.generators.project import ProjectGenerator
 
 
 def new_cmd(
     name: str = typer.Argument(..., help="Project name"),
     output: Path | None = typer.Option(None, "--output", "-o", help="Output directory"),  # noqa: B008
-    config: Path | None = typer.Option(None, "--config", "-c", help="Path to YAML config file"),  # noqa: B008
-    force: bool = typer.Option(False, "--force", "-f", help="Overwrite existing directory"),
+    force: bool = typer.Option(False, "--force", "-f", help="Overwrite existing directory"),  # noqa: B008
 ) -> None:
-    output_dir = Path(output or Path.cwd())
-    project_dir = output_dir / name
-
-    if project_dir.exists() and not force:
-        typer.echo(f"Error: {project_dir} already exists. Use --force to overwrite.")
-        raise typer.Exit(code=1)
-
-    if config and config.exists():
-        proj_config = ConfigLoader.load(config)
-    else:
-        typer.echo("No config file provided. Generating default config...")
-        config_yaml = ConfigLoader.generate_default(
+    """Scaffold a new Python project with CI/CD, tests, and tooling ready."""
+    gen = ProjectGenerator()
+    output_dir = output or Path.cwd()
+    try:
+        root = gen.generate(
             name=name,
-            owner="your-github-username",
-            author_name="Your Name",
-            author_email="your@email.com",
+            output_dir=output_dir,
+            force=force,
         )
-        config_path = project_dir / "pygenesis.yaml"
-        config_path.parent.mkdir(parents=True, exist_ok=True)
-        config_path.write_text(config_yaml, encoding="utf-8")
-        typer.echo(f"  Edit {config_path} with your info, then re-run.")
-        proj_config = ConfigLoader.load(config_path)
+    except FileExistsError as exc:
+        typer.echo(f"  Error: {exc}")
+        raise typer.Exit(code=1) from exc
 
-    errors = ConfigValidator.validate(proj_config)
-    if errors:
-        for err in errors:
-            typer.echo(f"  Config error: {err}")
-        raise typer.Exit(code=1)
-
-    generator = ProjectGenerator()
-    generator.generate(proj_config, output_dir)
-
-    typer.echo(f"Project created: {project_dir}")
-    typer.echo(f"  cd {project_dir}")
-    typer.echo("  git init && git add . && git commit -m 'Initial commit'")
+    typer.echo(f"  Created {root}")
+    typer.echo("")
+    typer.echo("  Next steps:")
+    typer.echo(f"    cd {name}")
+    typer.echo("    git add . && git commit -m 'Initial commit'")
+    typer.echo("    git remote add origin <repo-url>")
+    typer.echo("    git push -u origin main")
+    typer.echo("")
+    typer.echo("  Edit pygenesis.toml with your info, then run:")
+    typer.echo("    pygenesis generate")
