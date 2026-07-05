@@ -11,6 +11,7 @@ def init_cmd(
     name: str = typer.Argument(..., help="Project name"),
     force: bool = typer.Option(False, "--force", "-f", help="Overwrite existing config"),  # noqa: B008
 ) -> None:
+    """Create pygenesis.toml in the current directory."""
     config_path = Path("pygenesis.toml").resolve()
     if config_path.exists() and not force:
         typer.echo("  pygenesis.toml already exists. Use --force to overwrite.")

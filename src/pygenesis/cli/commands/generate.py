@@ -9,10 +9,12 @@ from pygenesis.models.config import PyGenesisConfig
 
 
 def generate_cmd(
+
     config: Path = typer.Option("pygenesis.toml", "--config", "-c", help="Config file"),  # noqa: B008
     dry_run: bool = typer.Option(False, "--dry-run", "-n", help="Show changes without writing"),  # noqa: B008
     force: bool = typer.Option(False, "--force", "-f", help="Overwrite existing files"),  # noqa: B008
 ) -> None:
+    """Generate CI/CD pipelines, Dockerfiles, and deploy configs."""
     if not config.exists():
         typer.echo(f"  Config not found: {config}")
         typer.echo("  Run: pygenesis init <name>")

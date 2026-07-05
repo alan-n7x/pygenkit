@@ -80,6 +80,7 @@ def _check_build_module() -> str:
 
 
 def doctor_cmd() -> None:
+    """Check system for required tools."""
     checks = [
         DoctorCheck("Python", _check_python, "Install Python 3.12+ from python.org"),
         DoctorCheck("Git", _check_git, "apt install git"),

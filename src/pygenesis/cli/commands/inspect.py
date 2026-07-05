@@ -14,6 +14,7 @@ def _fmt(val: object) -> str:
 
 
 def inspect_cmd() -> None:
+    """Analyze project structure, versions, and metadata."""
     project_dir = Path.cwd()
 
     typer.echo(f"  Inspecting {project_dir}")

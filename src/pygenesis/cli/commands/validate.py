@@ -6,6 +6,7 @@ from pygenesis.validators.api import has_errors, validate_project
 
 
 def validate_cmd() -> None:
+    """Check version consistency, workflow quality, and security."""
     project_dir = "."
 
     results = validate_project(project_dir)
