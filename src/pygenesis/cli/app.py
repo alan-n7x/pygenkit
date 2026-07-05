@@ -6,6 +6,7 @@ from pygenesis import __version__
 from pygenesis.cli.commands import (
     doctor_cmd,
     generate_cmd,
+    health_cmd,
     init_cmd,
     inspect_cmd,
     release_check_cmd,
@@ -44,4 +45,5 @@ cli.command(name="inspect")(inspect_cmd)
 cli.command(name="validate")(validate_cmd)
 cli.command(name="generate")(generate_cmd)
 cli.command(name="release-check")(release_check_cmd)
+cli.command(name="health")(health_cmd)
 cli.command(name="doctor")(doctor_cmd)
