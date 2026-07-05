@@ -1,0 +1,32 @@
+name: Publish to PyPI
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: {{ ci.runner }}
+    environment: {{ pypi.environment }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "{{ ci.python_versions[0] }}"
+      - name: Build
+        run: |
+          pip install build
+          python -m build
+{% if pypi.trusted_publishing %}
+      - name: Publish (trusted)
+        uses: pypa/gh-action-pypi-publish@release/v1
+{% else %}
+      - name: Publish
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: {% raw %}${{ secrets.PYPI_TOKEN }}{% endraw %}
+{% endif %}

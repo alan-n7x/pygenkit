@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [{{ release.branch }}]
+  pull_request:
+    branches: [{{ release.branch }}]
+
+jobs:
+  test:
+    runs-on: {{ ci.runner }}
+    strategy:
+      matrix:
+        python-version: {{ ci.python_versions }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: {% raw %}${{ matrix.python-version }}{% endraw %}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install .{% if project.extras %}["{{ project.extras }}"]{% endif %}
+{% if ci.lint %}
+      - name: Lint
+        run: pip install ruff && ruff check .
+{% endif %}
+{% if ci.type_check %}
+      - name: Type check
+        run: pip install mypy && mypy src/
+{% endif %}
+      - name: Test
+        run: pip install pytest && pytest

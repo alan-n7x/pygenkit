@@ -1,0 +1,14 @@
+app = "{{ project.name }}"
+primary_region = "{{ deploy.primary_region }}"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[http_service]
+  internal_port = {{ deploy.port }}
+  force_https = true
+
+[[vm]]
+  memory = "{{ deploy.memory }}"
+  cpu_kind = "{{ deploy.cpu_kind }}"
+  cpus = {{ deploy.cpus }}

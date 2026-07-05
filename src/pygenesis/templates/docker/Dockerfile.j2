@@ -1,0 +1,15 @@
+FROM python:{{ docker.base_image }}-slim AS builder
+
+WORKDIR /build
+COPY . .
+RUN pip install build && python -m build --wheel
+
+FROM python:{{ docker.base_image }}-slim
+
+WORKDIR /app
+COPY --from=builder /build/dist/*.whl /tmp/
+RUN pip install /tmp/*.whl && rm /tmp/*.whl
+
+EXPOSE {{ docker.port }}
+
+CMD ["{{ project.name }}"]

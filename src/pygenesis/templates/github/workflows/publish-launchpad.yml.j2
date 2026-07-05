@@ -1,0 +1,26 @@
+name: Publish to Launchpad
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  launchpad:
+    runs-on: {{ ci.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "{{ ci.python_versions[0] }}"
+      - name: Install build deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y devscripts debhelper dput
+      - name: Build source package
+        run: |
+          debuild -S -sa -d
+      - name: Upload to Launchpad
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh-agent.sock
+        run: |
+          dput ppa:{{ debian.owner }}/{{ debian.ppa }} ../*.changes

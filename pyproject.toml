@@ -29,10 +29,14 @@ pygenesis = "pygenesis.cli:cli"
 
 [tool.setuptools]
 package-dir = { "" = "src" }
+include-package-data = true
 
 [tool.setuptools.packages.find]
 where = ["src"]
 exclude = ["tests*"]
+
+[tool.setuptools.package-data]
+pygenesis = ["templates/**/*", "templates/**"]
 
 [tool.ruff]
 target-version = "py312"

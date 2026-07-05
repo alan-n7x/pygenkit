@@ -9,6 +9,7 @@ from pathlib import Path
 class ProjectConfig:
     name: str
     version: str = "0.1.0"
+    extras: str = ""
 
 
 @dataclass
@@ -38,9 +39,39 @@ class DebianConfig:
     enabled: bool = True
     email: str = ""
     name: str = ""
+    owner: str = ""
     ppa: str = "tools"
     distributions: list[str] = field(default_factory=lambda: ["noble"])
     revision: str = "1"
+
+
+@dataclass
+class GitHubConfig:
+    ci: bool = True
+    release: bool = True
+    publish_pypi: bool = True
+    publish_launchpad: bool = True
+
+
+@dataclass
+class DockerConfig:
+    enabled: bool = False
+    base_image: str = "3.12"
+    port: int = 8000
+    volumes: list[str] = field(default_factory=list)
+
+
+@dataclass
+class DeployConfig:
+    enabled: bool = False
+    fly: bool = True
+    heroku: bool = True
+    railway: bool = True
+    primary_region: str = "iad"
+    port: int = 8000
+    memory: str = "512mb"
+    cpu_kind: str = "shared"
+    cpus: int = 1
 
 
 @dataclass
@@ -50,6 +81,9 @@ class PyGenesisConfig:
     release: ReleaseConfig = field(default_factory=ReleaseConfig)
     pypi: PyPIConfig = field(default_factory=PyPIConfig)
     debian: DebianConfig = field(default_factory=DebianConfig)
+    github: GitHubConfig = field(default_factory=GitHubConfig)
+    docker: DockerConfig = field(default_factory=DockerConfig)
+    deploy: DeployConfig = field(default_factory=DeployConfig)
 
     @classmethod
     def load(cls, path: str | Path) -> PyGenesisConfig:
@@ -64,6 +98,7 @@ class PyGenesisConfig:
             project=ProjectConfig(
                 name=data.get("project", {}).get("name", ""),
                 version=data.get("project", {}).get("version", "0.1.0"),
+                extras=data.get("project", {}).get("extras", ""),
             ),
             ci=CIConfig(
                 python_versions=data.get("ci", {}).get("python_versions", ["3.12"]),
@@ -85,9 +120,33 @@ class PyGenesisConfig:
                 enabled=data.get("debian", {}).get("enabled", True),
                 email=data.get("debian", {}).get("email", ""),
                 name=data.get("debian", {}).get("name", ""),
+                owner=data.get("debian", {}).get("owner", ""),
                 ppa=data.get("debian", {}).get("ppa", "tools"),
                 distributions=data.get("debian", {}).get("distributions", ["noble"]),
                 revision=data.get("debian", {}).get("revision", "1"),
+            ),
+            github=GitHubConfig(
+                ci=data.get("github", {}).get("ci", True),
+                release=data.get("github", {}).get("release", True),
+                publish_pypi=data.get("github", {}).get("publish_pypi", True),
+                publish_launchpad=data.get("github", {}).get("publish_launchpad", True),
+            ),
+            docker=DockerConfig(
+                enabled=data.get("docker", {}).get("enabled", False),
+                base_image=data.get("docker", {}).get("base_image", "3.12"),
+                port=data.get("docker", {}).get("port", 8000),
+                volumes=data.get("docker", {}).get("volumes", []),
+            ),
+            deploy=DeployConfig(
+                enabled=data.get("deploy", {}).get("enabled", False),
+                fly=data.get("deploy", {}).get("fly", True),
+                heroku=data.get("deploy", {}).get("heroku", True),
+                railway=data.get("deploy", {}).get("railway", True),
+                primary_region=data.get("deploy", {}).get("primary_region", "iad"),
+                port=data.get("deploy", {}).get("port", 8000),
+                memory=data.get("deploy", {}).get("memory", "512mb"),
+                cpu_kind=data.get("deploy", {}).get("cpu_kind", "shared"),
+                cpus=data.get("deploy", {}).get("cpus", 1),
             ),
         )
 
@@ -96,6 +155,7 @@ class PyGenesisConfig:
         return f"""[project]
 name = "{name}"
 version = "0.1.0"
+extras = ""
 
 [ci]
 python_versions = ["3.12", "3.13"]
@@ -117,9 +177,33 @@ trusted_publishing = true
 enabled = true
 email = ""
 name = ""
+owner = ""
 ppa = "tools"
 distributions = ["noble"]
 revision = "1"
+
+[github]
+ci = true
+release = true
+publish_pypi = true
+publish_launchpad = true
+
+[docker]
+enabled = false
+base_image = "3.12"
+port = 8000
+volumes = []
+
+[deploy]
+enabled = false
+fly = true
+heroku = true
+railway = true
+primary_region = "iad"
+port = 8000
+memory = "512mb"
+cpu_kind = "shared"
+cpus = 1
 """
 
     def save(self, path: str | Path) -> None:
@@ -130,6 +214,7 @@ revision = "1"
         return f"""[project]
 name = "{self.project.name}"
 version = "{self.project.version}"
+extras = "{self.project.extras}"
 
 [ci]
 python_versions = {self.ci.python_versions}
@@ -151,7 +236,31 @@ trusted_publishing = {str(self.pypi.trusted_publishing).lower()}
 enabled = {str(self.debian.enabled).lower()}
 email = "{self.debian.email}"
 name = "{self.debian.name}"
+owner = "{self.debian.owner}"
 ppa = "{self.debian.ppa}"
 distributions = {self.debian.distributions}
 revision = "{self.debian.revision}"
+
+[github]
+ci = {str(self.github.ci).lower()}
+release = {str(self.github.release).lower()}
+publish_pypi = {str(self.github.publish_pypi).lower()}
+publish_launchpad = {str(self.github.publish_launchpad).lower()}
+
+[docker]
+enabled = {str(self.docker.enabled).lower()}
+base_image = "{self.docker.base_image}"
+port = {self.docker.port}
+volumes = {self.docker.volumes}
+
+[deploy]
+enabled = {str(self.deploy.enabled).lower()}
+fly = {str(self.deploy.fly).lower()}
+heroku = {str(self.deploy.heroku).lower()}
+railway = {str(self.deploy.railway).lower()}
+primary_region = "{self.deploy.primary_region}"
+port = {self.deploy.port}
+memory = "{self.deploy.memory}"
+cpu_kind = "{self.deploy.cpu_kind}"
+cpus = {self.deploy.cpus}
 """

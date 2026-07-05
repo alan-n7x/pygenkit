@@ -1,6 +1,9 @@
 from pygenesis.models.config import (
     CIConfig,
     DebianConfig,
+    DeployConfig,
+    DockerConfig,
+    GitHubConfig,
     ProjectConfig,
     PyGenesisConfig,
     PyPIConfig,
@@ -15,5 +18,8 @@ __all__ = [
     "ReleaseConfig",
     "PyPIConfig",
     "DebianConfig",
+    "GitHubConfig",
+    "DockerConfig",
+    "DeployConfig",
     "ProjectInspection",
 ]

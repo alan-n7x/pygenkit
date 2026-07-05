@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "{{ docker.port }}:{{ docker.port }}"
+    environment:
+      - PYTHONUNBUFFERED=1
+{% if docker.volumes %}
+    volumes:
+{% for vol in docker.volumes %}
+      - {{ vol }}
+{% endfor %}
+{% endif %}
