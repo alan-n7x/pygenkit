@@ -10,6 +10,7 @@ from pygenesis.cli.commands import (
     init_cmd,
     inspect_cmd,
     release_check_cmd,
+    review_cmd,
     validate_cmd,
 )
 
@@ -46,4 +47,5 @@ cli.command(name="validate")(validate_cmd)
 cli.command(name="generate")(generate_cmd)
 cli.command(name="release-check")(release_check_cmd)
 cli.command(name="health")(health_cmd)
+cli.command(name="review")(review_cmd)
 cli.command(name="doctor")(doctor_cmd)
