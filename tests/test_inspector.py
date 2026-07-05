@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
@@ -15,20 +16,21 @@ FIXTURES = ROOT / "tests" / "fixtures"
 
 
 def test_inspect_complete_project() -> None:
-    result = inspect_project(FIXTURES / "complete-project")
-    assert result.name == "complete-project"
-    assert result.version == "1.2.3"
-    assert result.python_requires == ">=3.11"
-    assert result.module == "my_module"
-    assert result.build_backend is not None
-    assert result.build_backend.name == "setuptools"
-    assert result.has_tests is True
-    assert result.license_type == "MIT"
-    assert result.has_debian.present is True
-    assert result.has_debian.version_in_changelog == "1.2.3"
-    assert result.has_workflows.has_ci is True
-    assert result.has_workflows.has_pypi_publish is True
-    assert result.versions.consistent is True
+    with patch("pygenkit.inspector.git.detect_git_tags", return_value=["v1.2.3"]):
+        result = inspect_project(FIXTURES / "complete-project")
+        assert result.name == "complete-project"
+        assert result.version == "1.2.3"
+        assert result.python_requires == ">=3.11"
+        assert result.module == "my_module"
+        assert result.build_backend is not None
+        assert result.build_backend.name == "setuptools"
+        assert result.has_tests is True
+        assert result.license_type == "MIT"
+        assert result.has_debian.present is True
+        assert result.has_debian.version_in_changelog == "1.2.3"
+        assert result.has_workflows.has_ci is True
+        assert result.has_workflows.has_pypi_publish is True
+        assert result.versions.consistent is True
 
 
 def test_inspect_no_pyproject(tmp_path: Path) -> None:
