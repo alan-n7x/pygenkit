@@ -10,6 +10,10 @@ Professional Python project generator -- **PyPI**, **APT**, and **Launchpad** re
 
 PyGenKit helps you bootstrap, inspect, validate, and release Python projects with a production-oriented workflow. It can analyze an existing codebase, check version consistency and CI/CD security, and generate GitHub Actions pipelines, Dockerfiles, and deploy configuration files.
 
+<p align="center">
+  <img src="docs/demo.svg" alt="PyGenKit terminal demo" width="900">
+</p>
+
 ## Why PyGenKit?
 
 Modern Python projects often need more than just source code: packaging metadata, CI, linting, type checking, tests, release automation, Docker, and deployment files. PyGenKit brings those pieces together in a repeatable CLI workflow so new projects start with a professional foundation.
