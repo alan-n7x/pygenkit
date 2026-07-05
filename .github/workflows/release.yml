@@ -39,6 +39,6 @@ jobs:
           files: dist/*
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-        if: github.repository_owner == 'alan-n7x' && vars.PYPI_ENABLED == 'true'
+        if: github.repository_owner == 'alan-n7x'
         with:
           skip-existing: true
